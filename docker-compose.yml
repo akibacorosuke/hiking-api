@@ -1,0 +1,32 @@
+version: '3'
+services:
+  mysql-db:
+    container_name: mysql-container
+    image: mysql:8.0
+    restart: always
+    hostname: mysql-host
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: mysql-standalone
+      MYSQL_USER: user
+    ports:
+    - 3307:3306
+    expose:
+    - "3307"
+    volumes:
+      - mysql_volume:/var/lib/mysql
+  spring-hiking-api:
+    container_name: hiking-api-1.2
+    image: java:8
+    restart: "no"
+    depends_on:
+      - mysql-db
+    volumes:
+      - .:/var/api
+    ports:
+      - "8080:8080"
+    working_dir: /var/api
+    command: "java -jar target/hiking-api.jar"
+volumes:
+  mysql_volume:
